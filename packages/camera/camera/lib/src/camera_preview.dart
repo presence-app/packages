@@ -22,24 +22,30 @@ class CameraPreview extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return controller.value.isInitialized
-        ? ValueListenableBuilder<CameraValue>(
-            valueListenable: controller,
-            builder: (BuildContext context, Object? value, Widget? child) {
-              return AspectRatio(
-                aspectRatio: _isLandscape()
-                    ? controller.value.aspectRatio
-                    : (1 / controller.value.aspectRatio),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: <Widget>[
-                    _wrapInRotatedBox(child: controller.buildPreview()),
-                    child ?? Container(),
-                  ],
-                ),
-              );
-            },
-            child: child,
-          )
+        ?
+
+    ValueListenableBuilder<CameraValue>(
+      valueListenable: controller,
+      builder: (BuildContext context, Object? value, Widget? child) {
+        return AspectRatio(
+          aspectRatio: (1 / controller.value.aspectRatio),
+          /*
+          _isLandscape()
+              ? (1 / controller.value.aspectRatio) //controller.value.aspectRatio
+              : (1 / controller.value.aspectRatio), // 1 / controller.value.aspectRatio)
+
+           */
+          child: Stack(
+            fit: StackFit.expand,
+            children: <Widget>[
+              _wrapInRotatedBox(child: controller.buildPreview()),
+              child ?? Container(),
+            ],
+          ),
+        );
+      },
+      child: child,
+    )
         : Container();
   }
 
@@ -62,11 +68,42 @@ class CameraPreview extends StatelessWidget {
   }
 
   int _getQuarterTurns() {
+
+    /* TESTING - This might be useful in case we need to do things here
+    if (controller.value.deviceOrientation == DeviceOrientation.portraitUp) {
+      debugPrint("CameraPreview: up");
+      return 0;
+    } else if (controller.value.deviceOrientation ==
+        DeviceOrientation.landscapeRight) {
+      debugPrint("CameraPreview: right");
+      /*
+      controller.value = controller.value.copyWith(
+        deviceOrientation: DeviceOrientation.landscapeRight,
+          lockedCaptureOrientation: const Optional<DeviceOrientation>.absent(),
+         previewSize: Size(controller.value.previewSize!.height, controller.value.previewSize!.width)
+      );
+       */
+      return 3;
+    } else
+    if (controller.value.deviceOrientation == DeviceOrientation.portraitDown) {
+      debugPrint("CameraPreview: down");
+      return 2;
+    }
+    else
+    if (controller.value.deviceOrientation == DeviceOrientation.landscapeLeft) {
+      debugPrint("CameraPreview: left");
+      return 5;
+    } else {
+      return 0;
+    }
+  */
+
+
     final Map<DeviceOrientation, int> turns = <DeviceOrientation, int>{
       DeviceOrientation.portraitUp: 0,
-      DeviceOrientation.landscapeRight: 1,
+      DeviceOrientation.landscapeRight: 3,
       DeviceOrientation.portraitDown: 2,
-      DeviceOrientation.landscapeLeft: 3,
+      DeviceOrientation.landscapeLeft: 5,
     };
     return turns[_getApplicableOrientation()]!;
   }
