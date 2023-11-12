@@ -50,9 +50,9 @@ class CameraPreview extends StatelessWidget {
   }
 
   Widget _wrapInRotatedBox({required Widget child}) {
-    if (kIsWeb) {
-      return child;
-    }
+   // if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
+   //   return child;
+   // }
 
     return RotatedBox(
       quarterTurns: _getQuarterTurns(),
