@@ -53,6 +53,9 @@ class CameraPreview extends StatelessWidget {
    // if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
    //   return child;
    // }
+    if (defaultTargetPlatform == TargetPlatform.android) {
+      return child;
+    }
 
     return RotatedBox(
       quarterTurns: _getQuarterTurns(),
