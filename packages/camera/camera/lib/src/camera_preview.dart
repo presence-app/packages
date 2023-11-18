@@ -9,12 +9,22 @@ import 'package:flutter/services.dart';
 import '../camera.dart';
 
 /// A widget showing a live camera preview.
+/// Note: on iOS [deviceOrientation] must be set to null
+/// coz the value will be fetched from [controller].
+/// on Android [deviceOrientation] must be the current device
+/// orientation correctly calculated by using device sensor
 class CameraPreview extends StatelessWidget {
   /// Creates a preview widget for the given camera controller.
-  const CameraPreview(this.controller, {super.key, this.child});
+  const CameraPreview(
+      this.controller,
+      this.deviceOrientation,
+      {super.key, this.child});
 
   /// The controller for the camera that the preview is shown for.
   final CameraController controller;
+
+  /// The device orientation can be passed to force CameraPreview rotation
+  final DeviceOrientation? deviceOrientation;
 
   /// A widget to overlay on top of the camera preview
   final Widget? child;
@@ -29,12 +39,13 @@ class CameraPreview extends StatelessWidget {
       builder: (BuildContext context, Object? value, Widget? child) {
         return AspectRatio(
           aspectRatio: (1 / controller.value.aspectRatio),
-          /*
-          _isLandscape()
-              ? (1 / controller.value.aspectRatio) //controller.value.aspectRatio
-              : (1 / controller.value.aspectRatio), // 1 / controller.value.aspectRatio)
 
-           */
+          /*
+          aspectRatio: _isLandscape()
+              ? controller.value.aspectRatio
+              : (1 / controller.value.aspectRatio), //
+          */
+
           child: Stack(
             fit: StackFit.expand,
             children: <Widget>[
@@ -50,12 +61,10 @@ class CameraPreview extends StatelessWidget {
   }
 
   Widget _wrapInRotatedBox({required Widget child}) {
-   // if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
-   //   return child;
-   // }
-    if (defaultTargetPlatform == TargetPlatform.android) {
-      return child;
-    }
+    // if (kIsWeb || defaultTargetPlatform != TargetPlatform.android) {
+    //   return child;
+    // }
+
 
     return RotatedBox(
       quarterTurns: _getQuarterTurns(),
@@ -70,13 +79,16 @@ class CameraPreview extends StatelessWidget {
     ].contains(_getApplicableOrientation());
   }
 
+
+
   int _getQuarterTurns() {
 
-    /* TESTING - This might be useful in case we need to do things here
-    if (controller.value.deviceOrientation == DeviceOrientation.portraitUp) {
+    final orientation = deviceOrientation ?? controller.value.deviceOrientation;
+    // TESTING - This might be useful in case we need to do things here
+    if (orientation == DeviceOrientation.portraitUp) {
       debugPrint("CameraPreview: up");
       return 0;
-    } else if (controller.value.deviceOrientation ==
+    } else if (orientation ==
         DeviceOrientation.landscapeRight) {
       debugPrint("CameraPreview: right");
       /*
@@ -86,22 +98,23 @@ class CameraPreview extends StatelessWidget {
          previewSize: Size(controller.value.previewSize!.height, controller.value.previewSize!.width)
       );
        */
-      return 3;
+
+      return defaultTargetPlatform == TargetPlatform.iOS ? 3 : 8;
     } else
-    if (controller.value.deviceOrientation == DeviceOrientation.portraitDown) {
+    if (orientation == DeviceOrientation.portraitDown) {
       debugPrint("CameraPreview: down");
-      return 2;
+      return defaultTargetPlatform == TargetPlatform.iOS ? 2 : 0;
     }
     else
-    if (controller.value.deviceOrientation == DeviceOrientation.landscapeLeft) {
+    if (orientation == DeviceOrientation.landscapeLeft) {
       debugPrint("CameraPreview: left");
-      return 5;
+      return defaultTargetPlatform == TargetPlatform.iOS ? 5 : 8;
     } else {
       return 0;
     }
-  */
 
 
+    /* Disabled coz return value from code above
     final Map<DeviceOrientation, int> turns = <DeviceOrientation, int>{
       DeviceOrientation.portraitUp: 0,
       DeviceOrientation.landscapeRight: 3,
@@ -109,13 +122,14 @@ class CameraPreview extends StatelessWidget {
       DeviceOrientation.landscapeLeft: 5,
     };
     return turns[_getApplicableOrientation()]!;
+    */
   }
 
   DeviceOrientation _getApplicableOrientation() {
     return controller.value.isRecordingVideo
         ? controller.value.recordingOrientation!
         : (controller.value.previewPauseOrientation ??
-            controller.value.lockedCaptureOrientation ??
-            controller.value.deviceOrientation);
+        controller.value.lockedCaptureOrientation ??
+        controller.value.deviceOrientation);
   }
 }
