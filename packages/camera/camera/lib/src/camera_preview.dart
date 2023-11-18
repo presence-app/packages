@@ -86,11 +86,11 @@ class CameraPreview extends StatelessWidget {
     final orientation = deviceOrientation ?? controller.value.deviceOrientation;
     // TESTING - This might be useful in case we need to do things here
     if (orientation == DeviceOrientation.portraitUp) {
-      debugPrint("CameraPreview: up");
+      //debugPrint("CameraPreview: up");
       return 0;
     } else if (orientation ==
         DeviceOrientation.landscapeRight) {
-      debugPrint("CameraPreview: right");
+      //debugPrint("CameraPreview: right");
       /*
       controller.value = controller.value.copyWith(
         deviceOrientation: DeviceOrientation.landscapeRight,
@@ -102,12 +102,12 @@ class CameraPreview extends StatelessWidget {
       return defaultTargetPlatform == TargetPlatform.iOS ? 3 : 8;
     } else
     if (orientation == DeviceOrientation.portraitDown) {
-      debugPrint("CameraPreview: down");
+      //debugPrint("CameraPreview: down");
       return defaultTargetPlatform == TargetPlatform.iOS ? 2 : 0;
     }
     else
     if (orientation == DeviceOrientation.landscapeLeft) {
-      debugPrint("CameraPreview: left");
+      //debugPrint("CameraPreview: left");
       return defaultTargetPlatform == TargetPlatform.iOS ? 5 : 8;
     } else {
       return 0;
